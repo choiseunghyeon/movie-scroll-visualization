@@ -1,15 +1,13 @@
-import { scroller } from "./scroller.js";
-import { LineChart } from "./charts/line_chart.js";
-import {
-  getMovieData
-} from './services/movie_data.js';
+import { scroller } from "./scroller.js"
+import { LineChart } from "./charts/line_chart.js"
+import { getMovieData } from "./services/movie_data.js"
 
-const WIDTH = 1000;
-const HEIGHT = 1000;
+const WIDTH = 1000
+const HEIGHT = 1000
 
-let lineChart;
+let lineChart
 
-setTimeout(drawInitial(), 100);
+setTimeout(drawInitial(), 100)
 
 /*
   drawInitial 함수
@@ -18,18 +16,12 @@ setTimeout(drawInitial(), 100);
     2) 차트 클래스의 인스턴스 생성
 */
 function drawInitial() {
-  d3.select("#visbox")
-    .append("svg")
-    .attr("width", WIDTH)
-    .attr("height", HEIGHT)
-    .attr("opacity", 1);
+  d3.select("#visbox").append("svg").attr("width", WIDTH).attr("height", HEIGHT).attr("opacity", 1)
 
-  lineChart = new LineChart('line-chart', WIDTH, HEIGHT)
+  lineChart = new LineChart("line-chart", WIDTH, HEIGHT)
 
-  draw1();
-
+  draw1()
 }
-
 
 /*
   clean 함수
@@ -37,18 +29,20 @@ function drawInitial() {
     ex) unshow() 메소드를 호출하면, .attr("opacity", 0); 를 처리함 
 */
 function clean(visType) {
-  const svg = d3.select("#visbox").select("svg");
+  const svg = d3.select("#visbox").select("svg")
 
   if (visType !== "isFirst") {
-    svg.selectAll(".movie-img").attr("opacity", 0);
-    console.log("clean first chart");
+    svg.selectAll(".movie-img").attr("opacity", 0)
+    console.log("clean first chart")
   }
-  if (visType !== "isLine"){
-    lineChart.unshow();
-    console.log("clean line chart");
+  if (visType !== "isLine") {
+    lineChart.unshow()
+    console.log("clean line chart")
+  }
+  if (visType !== "isVis4") {
+    svg.selectAll(".vis4").attr("opacity", 0)
   }
 }
-
 
 /*
   draw1 ~ draw3
@@ -57,50 +51,48 @@ function clean(visType) {
     - draw2~3 : 라인차트 
  */
 function draw1() {
-  clean("isFirst");
+  clean("isFirst")
 
-  const svg = d3.select("#visbox").select("svg");
+  const svg = d3.select("#visbox").select("svg")
 
   if (!svg.select(".movie-img").empty()) {
-    svg.select(".movie-img").attr("opacity", 1);
-    return;
+    svg.select(".movie-img").attr("opacity", 1)
+    return
   }
 
-  svg
-    .append("svg:image")
-    .attr("class", "movie-img")
-    .attr("xlink:href", "images/movie.png")
-    .attr("x", 0)
-    .attr("y", 0)
-    .attr("width", "100%")
-    .attr("height", "92%");
+  svg.append("svg:image").attr("class", "movie-img").attr("xlink:href", "images/movie.png").attr("x", 0).attr("y", 0).attr("width", "100%").attr("height", "92%")
 }
-
 
 async function draw2() {
-  clean("isLine");
+  clean("isLine")
 
-  const { dates, data } = await getMovieData('2019');
-  lineChart.drawChart(dates, data).show();
+  const { dates, data } = await getMovieData("2019")
+  lineChart.drawChart(dates, data).show()
 }
-
 
 async function draw3() {
-  clean("isLine");
+  clean("isLine")
 
-  const { dates, data } = await getMovieData('2020');
-  lineChart.drawChart(dates, data).show();
+  const { dates, data } = await getMovieData("2020")
+  lineChart.drawChart(dates, data).show()
 }
 
+async function draw4() {
+  clean("isVis4")
+
+  const svg = d3.select("#visbox").select("svg")
+  if (!svg.select(".vis4").empty()) {
+    svg.select(".vis4").attr("opacity", 1)
+    return
+  }
+
+  svg.append("rect").attr("class", "vis4").attr("x", 0).attr("y", 0).attr("width", "300").attr("height", "300").attr("fill", "yellow")
+}
 
 /*
   scroller에서 
   visFuncList에 등록된 순서대로 
   visbox sections에 맞춰 보여줌
 */
-const visFuncList = [
-  draw1,
-  draw2,
-  draw3,
-];
-scroller(visFuncList)();
+const visFuncList = [draw1, draw2, draw3, draw4]
+scroller(visFuncList)()
